@@ -5,7 +5,7 @@ from flask import Flask, render_template, request
 app = Flask(__name__)
 
 # Reads the CSV file 
-df = pd.read_csv('./proj3/static/countries/countries.csv')
+df = pd.read_csv('./static/countries/countries.csv')
 
 #Function to reset game
 def reset_game():
