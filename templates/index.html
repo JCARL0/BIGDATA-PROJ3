@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guess the Country!</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body class="mainbody">
+    <header class="header">
+        <h1>Guess the Country!</h1>
+    </header>
+
+    <main>
+        <div id="country-details">
+            <!-- Display the outline image of the country -->
+            <img class="outline" src="{{ country.Outline.values()|first }}" alt="Outline">
+            <h2>Country Details</h2>
+            <!-- Section displaying the remaining guess count -->
+            <div id="guess-count">
+                <p>
+                    Remaining Guesses: {{ remaining_guesses }}
+                </p>
+            </div>
+            <!-- Show the continent if there are at least 2 wrong guesses -->
+            {% if wrong_guesses >= 2 %}
+            <p>Continent: <span id="continent">{{ country.Continent.values()|first }}</span></p>
+            {% endif %}
+            <!-- Show the capital if there are at least 4 wrong guesses -->
+            {% if wrong_guesses >= 4 %}
+            <p>Capital: <span id="capital">{{ country.Capital.values()|first }}</span></p>
+            {% endif %}
+            <!-- Show the flag if there are at least 6 wrong guesses -->
+            {% if wrong_guesses >= 6 %}
+            <img class="flag" src="{{ country.Flag.values()|first }}" alt="Flag">
+            {% endif %}
+
+            <!-- Form to submit the guess  -->
+            <form action="/results" method="POST" class="formulario" {% if wrong_guesses >= 8 %} style="display: none;" {% endif %} > <!-- hide the form if there are 8 or more wrong guesses -->
+                <input type="text" name="guess" placeholder="Enter the Country"/>
+                <!-- Hidden fields to send additional data -->
+                <input type="hidden" name="country_name" value="{{ country_name }}">
+                <input type="hidden" name="wrong_guesses" value="{{ wrong_guesses }}">
+                <input type="submit" value="Submit">
+                <!-- Skip button if there are less than 4 wrong guesses -->
+                {% if wrong_guesses < 4 %}
+                <button type="submit" name="action" value="skip">Skip</button>
+                {% endif %}
+            </form>
+
+            <!-- Play Again button if there are 8 or more wrong guesses -->
+            {% if wrong_guesses >= 8 %}
+            <form action="/results" method="POST" class="formulario">
+                <input type="hidden" name="action" value="play_again">
+                <button type="submit">Play Again</button>
+            </form>
+            {% endif %}
+        </div>
+
+        <!-- Feedback message based on the guess result -->
+        {% if message %}
+        <div id="message" class="{% if correct_guess %}correct-message{% else %}incorrect-message{% endif %}" {% if not message %}style="display: none;"{% endif %}> 
+            <p>{{ message }}</p>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>
